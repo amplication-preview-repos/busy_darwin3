@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Client {
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  firstName    String?
+  id           String        @id @default(cuid())
+  lastName     String?
+  phoneNumber  String?
+  properties   Property[]
+  updatedAt    DateTime      @updatedAt
+}
+
+model Property {
+  agent        Agent?        @relation(fields: [agentId], references: [id])
+  agentId      String?
+  appointments Appointment[]
+  client       Client?       @relation(fields: [clientId], references: [id])
+  clientId     String?
+  createdAt    DateTime      @default(now())
+  description  String?
+  id           String        @id @default(cuid())
+  location     String?
+  price        Float?
+  title        String?
+  updatedAt    DateTime      @updatedAt
+}
+
+model Agent {
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  id           String        @id @default(cuid())
+  name         String?
+  phoneNumber  String?
+  properties   Property[]
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  agent      Agent?                 @relation(fields: [agentId], references: [id])
+  agentId    String?
+  client     Client?                @relation(fields: [clientId], references: [id])
+  clientId   String?
+  createdAt  DateTime               @default(now())
+  date       DateTime?
+  id         String                 @id @default(cuid())
+  notes      String?
+  property   Property?              @relation(fields: [propertyId], references: [id])
+  propertyId String?
+  status     EnumAppointmentStatus?
+  updatedAt  DateTime               @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumAppointmentStatus {
+  Option1
+}
